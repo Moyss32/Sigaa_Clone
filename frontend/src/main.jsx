@@ -1,10 +1,9 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import './components/login'
-import App from './components/login'
+import DashboardPage from './components/DashboardPage'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <App />
+    <DashboardPage />
   </StrictMode>,
 )

@@ -1,51 +1,94 @@
-import { useState } from "react";
-import "./login.css"; // vamos extrair o CSS pra um arquivo externo
+import { useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import "./login.css";
+import { AuthContext } from "../App.jsx";
 
 export default function Login() {
   const [userType, setUserType] = useState("aluno");
+  const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
-  const [senha, setSenha] = useState("");
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("");
+  
+  const { login } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const switchTab = (type) => {
     setUserType(type);
     setMessage("");
     setMessageType("");
+    setNome("");
     setEmail("");
-    setSenha("");
   };
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
 
-    if (!email || !senha) {
+    if (!nome || !email) {
       setMessage("Por favor, preencha todos os campos.");
       setMessageType("error");
       return;
     }
 
-    if (email.length < 5) {
+    if (email.length < 5 || !email.includes("@")) {
       setMessage("Email inválido.");
       setMessageType("error");
       return;
     }
 
-    if (senha.length < 6) {
-      setMessage("Senha deve ter no mínimo 6 caracteres.");
+    try {
+      const baseURL = "http://localhost:5000";
+      let usuarioEncontrado = null;
+
+      if (userType === "professor") {
+        const res = await fetch(`${baseURL}/api/professores`);
+        if (!res.ok) throw new Error("Erro ao buscar professores");
+        const professores = await res.json();
+
+        usuarioEncontrado = professores.find(
+          (p) =>
+            p.nome.toLowerCase() === nome.toLowerCase() &&
+            p.email.toLowerCase() === email.toLowerCase()
+        );
+      } else {
+        const res = await fetch(`${baseURL}/api/alunos`);
+        if (!res.ok) throw new Error("Erro ao buscar alunos");
+        const alunos = await res.json();
+
+        usuarioEncontrado = alunos.find(
+          (a) =>
+            a.nome.toLowerCase() === nome.toLowerCase() &&
+            a.email.toLowerCase() === email.toLowerCase()
+        );
+      }
+
+      if (!usuarioEncontrado) {
+        setMessage(
+          `${
+            userType === "professor" ? "Professor" : "Aluno"
+          } não encontrado com esse nome e email.`
+        );
+        setMessageType("error");
+        return;
+      }
+
+      setMessage(
+        `Login realizado com sucesso! Bem-vindo, ${usuarioEncontrado.nome}!`
+      );
+      setMessageType("success");
+
+      // Chama a função login do contexto
+      login(userType, usuarioEncontrado);
+
+      // Redireciona para o dashboard
+      setTimeout(() => {
+        navigate("/");
+      }, 600);
+    } catch (err) {
+      console.error("Erro ao verificar usuário:", err);
+      setMessage("Erro ao conectar com o servidor. Tente novamente.");
       setMessageType("error");
-      return;
     }
-
-    setMessage(
-      `Login realizado com sucesso! Bem-vindo, ${userType === "aluno" ? "Aluno" : "Professor"}!`
-    );
-    setMessageType("success");
-
-    setTimeout(() => {
-      setEmail("");
-      setSenha("");
-    }, 1500);
   };
 
   return (
@@ -75,6 +118,18 @@ export default function Login() {
 
         <form onSubmit={handleLogin}>
           <div className="form-group">
+            <label htmlFor="nome">Nome:</label>
+            <input
+              type="text"
+              id="nome"
+              placeholder="Seu nome completo"
+              value={nome}
+              onChange={(e) => setNome(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="form-group">
             <label htmlFor="email">Email:</label>
             <input
               type="email"
@@ -82,18 +137,6 @@ export default function Login() {
               placeholder="seu@email.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="senha">Senha:</label>
-            <input
-              type="password"
-              id="senha"
-              placeholder="••••••••"
-              value={senha}
-              onChange={(e) => setSenha(e.target.value)}
               required
             />
           </div>

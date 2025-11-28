@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-import LoginPage from "./LoginPage.jsx";
+import LoginPage from "./components/login.jsx";
 import DashboardPage from "./DashboardPage.jsx";
-import NotasPage from "./NotasPage.jsx";
+import NotasPage from "./GradesPage.jsx";
 
 export const AuthContext = React.createContext(null);
 
@@ -13,10 +13,10 @@ function PrivateRoute({ children }) {
 }
 
 export default function App() {
-  const [user, setUser] = useState(null); // depois você troca por auth real
+  const [user, setUser] = useState(null);
 
-  const login = (tipo) => {
-    setUser({ nome: "Moysés Voss", tipo }); // "aluno" ou "professor"
+  const login = (tipo, userData) => {
+    setUser({ ...userData, tipo });
   };
 
   const logout = () => setUser(null);
