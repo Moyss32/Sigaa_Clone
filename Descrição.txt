@@ -1,0 +1,87 @@
+Este documento descreve toda a configuração e estrutura do backend desenvolvido em Node.js para o sistema acadêmico.
+
+1. Estrutura de Arquivos
+========================
+backend/
+│
+├── server.js                 → Arquivo principal do servidor
+├── package.json              → Configuração dos pacotes e scripts npm
+├── .env                      → Variáveis de ambiente (porta, credenciais do banco, etc.)
+└── src/
+    ├── config/
+    │   └── db.js             → Configuração de conexão com o banco PostgreSQL usando 'pg'
+    │
+    ├── models/
+    │   └── alunos.model.js   → Contém as queries SQL relacionadas à tabela 'alunos'
+    │
+    ├── controllers/
+    │   └── alunos.controller.js → Lógica de controle das requisições (GET, POST, PUT, DELETE)
+    │
+    ├── routes/
+    │   ├── alunos.routes.js  → Define as rotas de acesso à API (ex: GET /api/alunos/:id)
+    │   ├── auth.routes.js    → (Futuro) Rotas de autenticação
+    │   └── private.routes.js → (Futuro) Rotas protegidas
+    │
+    └── middlewares/          → (Opcional) Poderá conter autenticação JWT, logs, etc.
+
+2. Principais Pacotes Instalados
+================================
+- express → Framework para servidor HTTP
+- pg → Cliente PostgreSQL para Node.js
+- dotenv → Gerenciamento de variáveis de ambiente
+- cors → Controle de acesso de origens (CORS)
+- helmet → Proteção de cabeçalhos HTTP
+- express-rate-limit → Limita requisições por IP (proteção básica contra DDoS)
+- cookie-parser → Leitura e manipulação de cookies
+- nodemon → Atualização automática durante o desenvolvimento
+
+3. Conteúdo dos Principais Arquivos
+===================================
+• server.js:
+  - Cria e configura o servidor Express.
+  - Define middlewares de segurança (helmet, rateLimit, cors).
+  - Importa e utiliza as rotas.
+  - Inicializa o servidor na porta definida no .env.
+
+• src/config/db.js:
+  - Importa o módulo 'pg' e cria uma pool de conexões com o banco PostgreSQL.
+  - Exporta o objeto 'pool' para ser utilizado nos models.
+
+• src/models/alunos.model.js:
+  - Define funções assíncronas para acesso ao banco (getAll, getById, create, update, delete).
+  - Utiliza 'pool.query' para executar comandos SQL de forma segura.
+
+• src/controllers/alunos.controller.js:
+  - Recebe as requisições HTTP e chama os métodos correspondentes do model.
+  - Retorna respostas JSON para o cliente (Front-End).
+
+• src/routes/alunos.routes.js:
+  - Define as rotas HTTP relacionadas aos alunos:
+      GET /api/alunos → lista todos
+      GET /api/alunos/:id → busca por ID
+      POST /api/alunos → cria novo aluno
+      PUT /api/alunos/:id → atualiza aluno existente
+      DELETE /api/alunos/:id → remove aluno
+
+4. Banco de Dados
+=================
+O projeto utiliza PostgreSQL, com uma base acadêmica completa (tabelas de alunos, cursos, professores, turmas, notas, mensagens, etc.).
+A conexão é feita pelo arquivo db.js, com credenciais definidas no arquivo .env.
+
+5. Teste e Execução
+===================
+Para rodar o servidor:
+$ npm install
+$ npx nodemon server.js
+
+Para testar endpoints, use:
+GET http://localhost:5000/api/alunos → Lista alunos
+GET http://localhost:5000/api/alunos/1 → Mostra aluno ID=1
+
+6. Próximos Passos
+==================
+- Adicionar autenticação com bcrypt e JWT.
+- Criar models/controllers para as demais tabelas.
+- Implementar painel administrativo (professores, turmas, notas, etc.).
+
+Este backend serve como base sólida para evolução de um sistema acadêmico completo.

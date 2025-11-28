@@ -1,0 +1,98 @@
+-- Tabela de alunos
+CREATE TABLE alunos (
+    id_aluno SERIAL PRIMARY KEY,
+    nome VARCHAR(150) NOT NULL,
+    matricula VARCHAR(20) UNIQUE NOT NULL,
+    email VARCHAR(100) UNIQUE,
+    data_nascimento DATE
+);
+
+-- Tabela de professores
+CREATE TABLE professores (
+    id_professor SERIAL PRIMARY KEY,
+    nome VARCHAR(150) NOT NULL,
+    matricula VARCHAR(20) UNIQUE NOT NULL,
+    email VARCHAR(100) UNIQUE,
+    disciplina VARCHAR(100) NOT NULL
+);
+
+-- Tabela de notas
+CREATE TABLE notas (
+    id_nota SERIAL PRIMARY KEY,
+    aluno_id INTEGER NOT NULL,
+    professor_id INTEGER NOT NULL,
+    nota DECIMAL(5,2) CHECK (nota >= 0 AND nota <= 10),
+    data_lancamento TIMESTAMP DEFAULT NOW(),
+    observacao TEXT,
+
+    CONSTRAINT fk_aluno FOREIGN KEY (aluno_id) REFERENCES alunos (id_aluno) ON DELETE CASCADE,
+    CONSTRAINT fk_professor FOREIGN KEY (professor_id) REFERENCES professores (id_professor) ON DELETE CASCADE
+);
+
+
+INSERT INTO alunos (nome, matricula, email, data_nascimento) VALUES
+('Aluno 1', 'A0001', 'aluno1@email.com', '2007-01-10'),
+('Aluno 2', 'A0002', 'aluno2@email.com', '2007-02-15'),
+('Aluno 3', 'A0003', 'aluno3@email.com', '2006-11-20'),
+('Aluno 4', 'A0004', 'aluno4@email.com', '2006-12-05'),
+('Aluno 5', 'A0005', 'aluno5@email.com', '2007-03-14'),
+('Aluno 6', 'A0006', 'aluno6@email.com', '2006-06-21'),
+('Aluno 7', 'A0007', 'aluno7@email.com', '2007-09-18'),
+('Aluno 8', 'A0008', 'aluno8@email.com', '2007-08-28'),
+('Aluno 9', 'A0009', 'aluno9@email.com', '2006-09-09'),
+('Aluno 10', 'A0010', 'aluno10@email.com', '2007-04-04'),
+('Aluno 11', 'A0011', 'aluno11@email.com', '2007-05-19'),
+('Aluno 12', 'A0012', 'aluno12@email.com', '2006-10-30'),
+('Aluno 13', 'A0013', 'aluno13@email.com', '2007-06-01'),
+('Aluno 14', 'A0014', 'aluno14@email.com', '2007-07-22'),
+('Aluno 15', 'A0015', 'aluno15@email.com', '2006-03-13'),
+('Aluno 16', 'A0016', 'aluno16@email.com', '2006-08-03'),
+('Aluno 17', 'A0017', 'aluno17@email.com', '2007-10-10'),
+('Aluno 18', 'A0018', 'aluno18@email.com', '2007-03-26'),
+('Aluno 19', 'A0019', 'aluno19@email.com', '2006-12-25'),
+('Aluno 20', 'A0020', 'aluno20@email.com', '2007-08-06'),
+('Aluno 21', 'A0021', 'aluno21@email.com', '2007-07-24'),
+('Aluno 22', 'A0022', 'aluno22@email.com', '2006-06-11'),
+('Aluno 23', 'A0023', 'aluno23@email.com', '2007-09-29'),
+('Aluno 24', 'A0024', 'aluno24@email.com', '2006-04-12'),
+('Aluno 25', 'A0025', 'aluno25@email.com', '2007-12-15'),
+('Aluno 26', 'A0026', 'aluno26@email.com', '2007-01-25'),
+('Aluno 27', 'A0027', 'aluno27@email.com', '2006-11-17'),
+('Aluno 28', 'A0028', 'aluno28@email.com', '2006-05-22'),
+('Aluno 29', 'A0029', 'aluno29@email.com', '2007-05-05'),
+('Aluno 30', 'A0030', 'aluno30@email.com', '2006-02-08');
+
+INSERT INTO professores (nome, matricula, email, disciplina) VALUES
+('Professor 1', 'P0001', 'prof1@email.com', 'Matemática'),
+('Professor 2', 'P0002', 'prof2@email.com', 'Português'),
+('Professor 3', 'P0003', 'prof3@email.com', 'Física'),
+('Professor 4', 'P0004', 'prof4@email.com', 'Química'),
+('Professor 5', 'P0005', 'prof5@email.com', 'Biologia'),
+('Professor 6', 'P0006', 'prof6@email.com', 'Geografia'),
+('Professor 7', 'P0007', 'prof7@email.com', 'História'),
+('Professor 8', 'P0008', 'prof8@email.com', 'Inglês'),
+('Professor 9', 'P0009', 'prof9@email.com', 'Espanhol'),
+('Professor 10', 'P0010', 'prof10@email.com', 'Sociologia'),
+('Professor 11', 'P0011', 'prof11@email.com', 'Filosofia'),
+('Professor 12', 'P0012', 'prof12@email.com', 'Arte'),
+('Professor 13', 'P0013', 'prof13@email.com', 'Educação Física'),
+('Professor 14', 'P0014', 'prof14@email.com', 'Informática'),
+('Professor 15', 'P0015', 'prof15@email.com', 'Literatura');
+
+
+
+DO $$
+DECLARE
+  a INTEGER;
+  p INTEGER;
+  n INTEGER;
+BEGIN
+  FOR a IN 1..30 LOOP           -- id_aluno de 1 a 30
+    FOR p IN 1..15 LOOP         -- id_professor de 1 a 15
+      FOR n IN 1..9 LOOP        -- 9 notas para cada par
+        INSERT INTO notas (aluno_id, professor_id, nota, observacao)
+        VALUES (a, p, ROUND((random() * 10)::numeric, 2), 'Nota automática');
+      END LOOP;
+    END LOOP;
+  END LOOP;
+END$$;
