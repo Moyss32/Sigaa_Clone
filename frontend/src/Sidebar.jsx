@@ -1,6 +1,6 @@
 import React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { AuthContext } from "../App.jsx";
+import { AuthContext } from "./App.jsx";
 
 export default function Sidebar() {
   const { user, logout } = React.useContext(AuthContext);

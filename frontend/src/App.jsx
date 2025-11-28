@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import LoginPage from "./components/login.jsx";
 import DashboardPage from "./DashboardPage.jsx";
 import NotasPage from "./GradesPage.jsx";
@@ -15,34 +15,38 @@ function PrivateRoute({ children }) {
 export default function App() {
   const [user, setUser] = useState(null);
 
-  const login = (tipo, userData) => {
-    setUser({ ...userData, tipo });
+  const login = ({ nome, email }) => {
+    // Na versão simples, armazenamos apenas o nome/email em memória
+    setUser({ nome, email });
   };
 
   const logout = () => setUser(null);
 
   return (
     <AuthContext.Provider value={{ user, login, logout }}>
-      <Routes>
-        <Route path="/login" element={<LoginPage />} />
-        <Route
-          path="/"
-          element={
-            <PrivateRoute>
-              <DashboardPage />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/notas"
-          element={
-            <PrivateRoute>
-              <NotasPage />
-            </PrivateRoute>
-          }
-        />
-        <Route path="*" element={<Navigate to="/login" replace />} />
-      </Routes>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/login" element={<LoginPage />} />
+          <Route
+            path="/dashboard"
+            element={
+              <PrivateRoute>
+                <DashboardPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/notas"
+            element={
+              <PrivateRoute>
+                <NotasPage />
+              </PrivateRoute>
+            }
+          />
+          <Route path="/" element={<Navigate to={user ? "/dashboard" : "/login"} replace />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </BrowserRouter>
     </AuthContext.Provider>
   );
 }

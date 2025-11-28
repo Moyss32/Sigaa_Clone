@@ -1,0 +1,14 @@
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+<<<<<<< HEAD
+import DashboardPage from './components/DashboardPage'
+=======
+import './Dashboard.css'
+import App from './Dashboard.jsx'
+>>>>>>> parent of 11257c7 (Al)
+
+createRoot(document.getElementById('root')).render(
+  <StrictMode>
+    <DashboardPage />
+  </StrictMode>,
+)
